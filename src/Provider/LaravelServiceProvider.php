@@ -38,7 +38,13 @@ class LaravelServiceProvider extends DingoServiceProvider
 
             $this->updateRouterBindings();
         });
+        
+        $this->app->resolving(\Dingo\Api\Http\FormRequest::class, function ($request, $app) {
+            $request = \Illuminate\Foundation\Http\FormRequest::createFrom($app['request'], $request);
 
+            $request->setContainer($app)->setRedirector($app->make(Redirector::class));
+        });
+        
         $this->addMiddlewareAlias('api.auth', Auth::class);
         $this->addMiddlewareAlias('api.throttle', RateLimit::class);
         $this->addMiddlewareAlias('api.controllers', PrepareController::class);
